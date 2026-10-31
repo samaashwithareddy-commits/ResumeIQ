@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Resume Builder{% endblock %}
+{% block eyebrow %}Interactive editor{% endblock %}
+{% block page_title %}Resume builder{% endblock %}
+{% block page_sub %}Edit on the left, watch the A4 preview update instantly. Every change autosaves.{% endblock %}
+
+{% block content %}
+{% if not resume %}
+  <div class="card builder-empty">
+    <span class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+    </span>
+    <h2>No resume draft yet</h2>
+    <p>
+      A draft is a snapshot of your master profile that you can edit freely — your profile itself is never
+      changed by the editor. Create one to start tailoring.
+    </p>
+    <div class="hero-actions" style="justify-content:center;">
+      <button class="btn btn-primary" data-action="create-resume">Create resume from profile</button>
+      <a class="btn btn-ghost" href="{{ url_for('profile_page') }}">Review profile</a>
+    </div>
+  </div>
+{% else %}
+<div class="builder-content" id="builderRoot" data-resume-id="{{ resume.id }}">
+  <div class="builder-toolbar">
+    <div class="builder-title">
+      <label class="field-label" for="builderTitle">Resume title <span class="opt">visible only to you</span></label>
+      <input class="input" id="builderTitle" maxlength="120" value="{{ resume.title }}">
+    </div>
+    <div class="toolbar-group">
+      <label class="preview-toolbar-label" for="templateSelect">Template</label>
+      <select class="select" id="templateSelect" style="width:auto;">
+        {% for t in templates %}
+          <option value="{{ t.id }}" {{ 'selected' if resume.template == t.id }}>{{ t.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div class="toolbar-group">
+      <button class="icon-btn" type="button" id="undoBtn" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a7 7 0 0 1 0 14h-3"/></svg>
+      </button>
+      <button class="icon-btn" type="button" id="redoBtn" title="Redo (Ctrl+Y)" aria-label="Redo" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9h-9a7 7 0 0 0 0 14h3"/></svg>
+      </button>
+      <span class="save-state" id="saveState"><span class="dot"></span> Saved</span>
+    </div>
+    <div class="toolbar-group" style="margin-left:auto;">
+      <a class="btn btn-ghost btn-sm" data-export="pdf" href="{{ url_for('export_resume', resume_id=resume.id, fmt='pdf') }}">PDF</a>
+      <a class="btn btn-primary btn-sm" data-export="docx" href="{{ url_for('export_resume', resume_id=resume.id, fmt='docx') }}">DOCX</a>
+      <button class="icon-btn" type="button" id="deleteResume" title="Delete this draft" aria-label="Delete this draft">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="builder-grid" style="margin-top:16px;">
+    <div class="editor-pane">
+      <section class="ai-card" id="aiPanel">
+        <div class="ai-card-head">
+          <div>
+            <h3>
+              <span class="ai-spark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z"/></svg>
+              </span>
+              AI tailoring
+            </h3>
+            <p>Rewrite existing bullets and the summary against one analysed job — facts only, every change confirmed by you.</p>
+          </div>
+          <span class="chip {{ 'chip-good' if ai.configured else 'chip-warn' }}">{{ 'Live AI' if ai.configured else 'Demo mode' }}</span>
+        </div>
+
+        <div class="ai-controls">
+          <select class="select" id="aiJobSelect" aria-label="Job description to tailor against">
+            {% for job in jobs %}
+              <option value="{{ job.id }}" {{ 'selected' if (requested_job_id == job.id) or (not requested_job_id and resume.job_id == job.id) }}>
+                {{ job.title or 'Untitled role' }}{% if job.company %} · {{ job.company }}{% endif %}{% if job.score is not none %} · {{ job.score|score_int }}%{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-primary btn-sm" type="button" id="aiGenerate" {{ 'disabled' if not jobs }}>
+            Generate suggestions
+          </button>
+          {% if not jobs %}
+            <a class="btn btn-ghost btn-sm" href="{{ url_for('matcher_page') }}">Analyse a job first</a>
+          {% endif %}
+        </div>
+
+        <div id="aiBanner">
+          {% if not ai.configured %}
+            <div class="ai-mode-banner is-fallback">
+              <strong>Demo mode.</strong> No Featherless API key is configured, so ResumeIQ will use
+              deterministic keyword analysis and safe verb rewrites. No live AI call is made.
+            </div>
+          {% endif %}
+        </div>
+        <div class="ai-results" id="aiResults"></div>
+      </section>
+
+      <div class="card" style="padding:12px;">
+        <div class="section-list" id="sectionList"></div>
+        <button class="add-row" type="button" id="addSection" style="margin-top:12px;">+ Add a custom section</button>
+      </div>
+    </div>
+
+    <div class="preview-pane">
+      <div class="preview-toolbar">
+        <div class="preview-toolbar-left">
+          <span class="preview-toolbar-label">Live preview</span>
+          <span class="chip chip-ghost" id="previewScaleLabel">A4</span>
+        </div>
+        <div class="preview-toolbar-left">
+          <div class="segmented" data-device-group>
+            <button type="button" class="is-active" data-device="desktop">Desktop</button>
+            <button type="button" data-device="mobile">Mobile</button>
+          </div>
+        </div>
+      </div>
+      <div class="preview-stage" id="previewStage">
+        <div class="preview-stage-inner" id="previewInner">
+          <div class="resume-scaler" id="previewScaler"></div>
+        </div>
+      </div>
+      <p class="preview-meta">
+        The preview matches the exported layout closely. PDF uses A4 with 17&nbsp;mm side margins;
+        DOCX keeps the same section order as editable paragraphs.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="builderData">{{ resume_json|tojson }}</script>
+<script type="application/json" id="builderJobs">{{ jobs|tojson }}</script>
+<script type="application/json" id="builderMeta">{{ {'requestedJobId': requested_job_id or 0, 'liveAi': ai.configured} | tojson }}</script>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if resume %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endif %}
+{% endblock %}

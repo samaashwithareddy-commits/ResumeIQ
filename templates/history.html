@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Export History{% endblock %}
+{% block eyebrow %}Download log{% endblock %}
+{% block page_title %}Export history{% endblock %}
+{% block page_sub %}Every PDF and DOCX you generated, with a one-click re-export.{% endblock %}
+
+{% block content %}
+<section class="card table-card">
+  <div class="card-head">
+    <div>
+      <h3>Generated files</h3>
+      <p>Exports are produced from the latest saved resume content at download time.</p>
+    </div>
+    <span class="chip chip-ghost">{{ exports|length }} export{{ '' if exports|length == 1 else 's' }}</span>
+  </div>
+  {% if exports %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Format</th>
+            <th>Template</th>
+            <th>Resume</th>
+            <th>Generated</th>
+            <th class="cell-actions">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in exports %}
+            <tr>
+              <td class="cell-strong">{{ item.filename }}</td>
+              <td><span class="fmt-badge fmt-{{ item.fmt }}">{{ item.fmt|upper }}</span></td>
+              <td>{{ item.template|capitalize }}</td>
+              <td>{{ item.resume_title }}</td>
+              <td>{{ item.created_at|nicedt }}</td>
+              <td class="cell-actions">
+                <a class="btn btn-ghost btn-sm" href="{{ url_for('export_resume', resume_id=item.resume_id, fmt=item.fmt) }}">Export again</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="table-empty">
+      <span class="empty-icon" style="margin: 0 auto 6px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 21h16"/></svg>
+      </span>
+      <h3>No exports yet</h3>
+      <p>Open a resume draft and use the PDF or DOCX buttons. Real files are generated and logged here.</p>
+      <a class="btn btn-primary btn-sm" href="{{ url_for('builder_page') }}">Open the resume builder</a>
+    </div>
+  {% endif %}
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <div>
+      <h3>Your drafts</h3>
+      <p>Quick export access without opening the editor.</p>
+    </div>
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('builder_page') }}">New draft</a>
+  </div>
+  {% if resumes %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Draft</th><th>Template</th><th>Job</th><th>Last edited</th><th class="cell-actions">Export</th></tr>
+        </thead>
+        <tbody>
+          {% for draft in resumes %}
+            <tr>
+              <td class="cell-strong"><a href="{{ url_for('builder_page', resume_id=draft.id) }}">{{ draft.title }}</a></td>
+              <td>{{ draft.template|capitalize }}</td>
+              <td>{{ draft.job_title or '—' }}</td>
+              <td>{{ draft.updated_at|nicedt }}</td>
+              <td class="cell-actions">
+                <a class="btn btn-ghost btn-sm" href="{{ url_for('export_resume', resume_id=draft.id, fmt='pdf') }}">PDF</a>
+                <a class="btn btn-ghost btn-sm" href="{{ url_for('export_resume', resume_id=draft.id, fmt='docx') }}">DOCX</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="table-empty">
+      <h3>No drafts saved</h3>
+      <p>Create a draft from your master profile to start tailoring.</p>
+      <button class="btn btn-primary btn-sm" data-action="create-resume">Create a resume</button>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

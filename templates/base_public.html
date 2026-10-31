@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ResumeIQ — Tailored resumes for every job{% endblock %}</title>
+  <meta name="description" content="ResumeIQ analyses job descriptions, scores your real profile against them, and helps you tailor a truthful resume with a live editor and PDF/DOCX export.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234F46E5'/%3E%3Cpath d='M9 22V10h7a4 4 0 0 1 0 8h-4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M15 18l5 4' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="public-body">
+  <div class="public-glow" aria-hidden="true"></div>
+  <header class="public-nav">
+    <a class="brand brand-light" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M9 24V8h8a5 5 0 0 1 0 10h-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M16 18l6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </span>
+      <span class="brand-text"><strong>ResumeIQ</strong><small>Tailor · Match · Export</small></span>
+    </a>
+    <nav class="public-links">
+      <a href="{{ url_for('matcher_page') }}">Job Matcher</a>
+      <a href="{{ url_for('templates_page') }}">Templates</a>
+      <a href="{{ url_for('dashboard_page') }}">Dashboard</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('dashboard_page') }}">Open workspace</a>
+  </header>
+
+  <main class="public-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="public-footer">
+    <span>ResumeIQ · {{ tagline }}</span>
+    <span>Built with Flask, SQLite and Featherless AI (optional)</span>
+  </footer>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

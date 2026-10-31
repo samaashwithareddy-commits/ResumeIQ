@@ -1,0 +1,154 @@
+{% extends "base_public.html" %}
+{% block title %}ResumeIQ — Your experience. Their requirements. One perfect match.{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="pill"><span class="pill-dot"></span> Hackathon-ready · works fully offline</span>
+    <h1>Your experience.<br><span class="gradient-text">Their requirements.</span><br>One perfect match.</h1>
+    <p class="hero-lede">
+      ResumeIQ reads a job description, scores your real profile against it, shows exactly which
+      skills are missing, and helps you rewrite your resume — without inventing a single fact.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard_page') }}">Open the dashboard</a>
+      <form method="post" action="{{ url_for('demo_start') }}" class="inline-form">
+        <button class="btn btn-ghost btn-lg" type="submit">Load the demo candidate</button>
+      </form>
+    </div>
+    <p class="hero-note">
+      {% if stats.ai_ready %}
+        Live AI tailoring is configured. Deterministic scoring always works without a key.
+      {% else %}
+        No AI key needed: matching, the editor and exports work in clearly labelled demo mode.
+      {% endif %}
+    </p>
+    <ul class="hero-stats">
+      <li><strong>50 / 20 / 20 / 10</strong><span>documented score weights</span></li>
+      <li><strong>3</strong><span>export-ready templates</span></li>
+      <li><strong>PDF + DOCX</strong><span>genuine file exports</span></li>
+    </ul>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="mock-card mock-score">
+      <div class="mock-head">
+        <span class="mock-title">Job match</span>
+        <span class="chip chip-indigo">Software Engineer Intern</span>
+      </div>
+      <div class="mock-score-row">
+        <div class="donut" style="--value: 64"><span>64<small>%</small></span></div>
+        <div class="mock-score-body">
+          <strong class="mock-score-label">Moderate alignment</strong>
+          <p class="muted-sm">8 of 12 required skills found</p>
+          <div class="mock-bars">
+            <div class="mock-bar"><span>Required skills</span><i style="--w:67%"></i></div>
+            <div class="mock-bar"><span>Preferred skills</span><i style="--w:40%"></i></div>
+            <div class="mock-bar"><span>Projects &amp; experience</span><i style="--w:63%"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="chips-row">
+        <span class="chip chip-good">Python</span><span class="chip chip-good">Flask</span>
+        <span class="chip chip-good">SQL</span><span class="chip chip-bad">PostgreSQL</span>
+        <span class="chip chip-bad">Redis</span><span class="chip chip-bad">CI/CD</span>
+      </div>
+    </div>
+
+    <div class="mock-card mock-resume">
+      <div class="mock-resume-head">
+        <span class="mock-avatar">AS</span>
+        <div><strong>Aarav Sharma</strong><small>Backend intern · final year</small></div>
+        <span class="chip chip-ghost">live preview</span>
+      </div>
+      <div class="mock-lines"><span style="--w:92%"></span><span style="--w:78%"></span><span style="--w:86%"></span></div>
+      <div class="mock-section">
+        <span class="mock-line-title">Skills</span>
+        <div class="chips-row">
+          <span class="chip chip-soft">Python</span><span class="chip chip-soft">Flask</span>
+          <span class="chip chip-soft">Docker</span><span class="chip chip-soft">MongoDB</span>
+        </div>
+      </div>
+      <div class="mock-section">
+        <span class="mock-line-title">Projects</span>
+        <div class="mock-lines"><span style="--w:94%"></span><span style="--w:70%"></span></div>
+      </div>
+      <div class="mock-float"><span class="dot"></span> Autosaved</div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="section-head">
+    <span class="eyebrow">What it does</span>
+    <h2>Everything between “I found a role” and “resume sent”.</h2>
+    <p>Rule-based matching you can audit, AI rewrites you can reject, and exports that are real files.</p>
+  </div>
+  <div class="feature-grid">
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
+      </span>
+      <h3>Transparent match score</h3>
+      <p>50% required skills, 20% preferred skills, 20% projects &amp; experience, 10% education. Not-applicable categories are redistributed and explained.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6V4h16v2"/><path d="M12 4v16"/><path d="M8 20h8"/></svg>
+      </span>
+      <h3>Truthful AI tailoring</h3>
+      <p>Rewrites only rephrase existing facts. New numbers and unsupported skills are rejected by a validator before they ever reach your resume.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
+      </span>
+      <h3>Live editor, three themes</h3>
+      <p>Two-panel editing, instant preview, drag-free reordering, visibility toggles, undo/redo and autosave to SQLite.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+      </span>
+      <h3>Real PDF &amp; DOCX</h3>
+      <p>A4 pages, consistent margins, wrapped text, no clipped content — and a Word document with editable paragraphs and list bullets.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg>
+      </span>
+      <h3>Safety by default</h3>
+      <p>API keys stay on the server, URLs are SSRF-checked, inputs validated, all SQL parameterised and every suggestion requires your confirmation.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m8 15 3-4 3 2 4-6"/></svg>
+      </span>
+      <h3>Honest by design</h3>
+      <p>No random scores, no invented internships, no promises about ATS. If the AI call fails the app says so and falls back to deterministic rules.</p>
+    </article>
+  </div>
+</section>
+
+<section class="workflow-section">
+  <div class="section-head">
+    <span class="eyebrow">Demo flow</span>
+    <h2>Seven clicks from job posting to download.</h2>
+  </div>
+  <ol class="workflow">
+    <li><span>01</span><div><strong>Load the demo candidate</strong><p>A fictional final-year student, clearly labelled as demonstration data.</p></div></li>
+    <li><span>02</span><div><strong>Paste the sample job</strong><p>Or analyse your own description. Skills, preferences and requirements are extracted.</p></div></li>
+    <li><span>03</span><div><strong>Read the score</strong><p>Every category shows points earned, why, and what was skipped.</p></div></li>
+    <li><span>04</span><div><strong>Tailor and edit</strong><p>Apply only the suggestions you agree with, then edit in the live two-panel builder.</p></div></li>
+    <li><span>05</span><div><strong>Export</strong><p>Download a real PDF and DOCX from the latest saved content.</p></div></li>
+  </ol>
+</section>
+
+<section class="honesty-band">
+  <div>
+    <span class="eyebrow">The rule we don’t break</span>
+    <h2>Your resume stays yours.</h2>
+    <p>ResumeIQ never adds a degree, employer, skill or metric that you did not enter. Missing skills are shown as gaps to learn — not as things to fake.</p>
+  </div>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('matcher_page') }}">Analyse a job description</a>
+</section>
+{% endblock %}

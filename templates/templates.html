@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Resume Templates{% endblock %}
+{% block eyebrow %}Three export-ready layouts{% endblock %}
+{% block page_title %}Resume templates{% endblock %}
+{% block page_sub %}All three export as real PDF and DOCX. Pick a starting point — you can switch any time.{% endblock %}
+
+{% block content %}
+{% if not has_profile %}
+  <div class="notice notice-warn">
+    <div>
+      <strong>Previews use placeholder content.</strong>
+      Load the demonstration profile or fill in your own to see your details in every template.
+    </div>
+    <div class="notice-actions">
+      <button class="btn btn-primary btn-sm" data-action="load-demo">Load demo data</button>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('profile_page') }}">Open profile</a>
+    </div>
+  </div>
+{% endif %}
+
+<div class="section-title-row">
+  <div>
+    <h3>Choose a layout</h3>
+    <p>Each preview is rendered from your latest draft (or your master profile) at 36% scale.</p>
+  </div>
+  <span class="chip chip-ghost">Default: {{ default_template|capitalize }}</span>
+</div>
+
+<div class="template-grid">
+  {% for template in templates %}
+    <article class="template-card" data-template-card="{{ template.id }}">
+      <div class="template-preview">
+        <div class="template-preview-inner" data-template-preview="{{ template.id }}"></div>
+      </div>
+      <div class="template-body">
+        <h3>
+          {{ template.name }}
+          {% if default_template == template.id %}<span class="default-badge">Default</span>{% endif %}
+        </h3>
+        <span class="template-tagline">{{ template.tagline }}</span>
+        <p>{{ template.description }}</p>
+        <div class="chips-row">
+          {% for tag in template.tags %}<span class="chip chip-ghost">{{ tag }}</span>{% endfor %}
+        </div>
+        <div class="template-actions">
+          <button class="btn btn-primary btn-sm" type="button" data-use-template="{{ template.id }}">Use this template</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-default-template="{{ template.id }}">Set default</button>
+        </div>
+      </div>
+    </article>
+  {% endfor %}
+</div>
+
+<section class="card" style="margin-top: 18px;">
+  <div class="section-title-row">
+    <div>
+      <h3>What “export-ready” means here</h3>
+      <p>No text is placed inside images or absolute-positioned boxes, so parsers can read it.</p>
+    </div>
+  </div>
+  <div class="detail-grid three">
+    <div>
+      <span class="mini-label">PDF</span>
+      <ul class="detail-list">
+        <li>A4 page, 17&nbsp;mm side margins, automatic page breaks</li>
+        <li>Long words wrap instead of clipping</li>
+        <li>Sections are kept together — no orphaned headings</li>
+      </ul>
+    </div>
+    <div>
+      <span class="mini-label">DOCX</span>
+      <ul class="detail-list">
+        <li>Editable paragraphs and real paragraph headings</li>
+        <li>Native Word list bullets</li>
+        <li>Same section order and visibility as the draft</li>
+      </ul>
+    </div>
+    <div>
+      <span class="mini-label">Honesty</span>
+      <ul class="detail-list">
+        <li>Exports use the latest autosaved content only</li>
+        <li>Switching template never changes your text</li>
+        <li>No ATS score is promised anywhere</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script type="application/json" id="templatePreviewData">{{ preview_content|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
+{% endblock %}

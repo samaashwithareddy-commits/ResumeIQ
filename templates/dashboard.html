@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block eyebrow %}Workspace{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_sub %}Everything you need to tailor one resume for one role — without guessing.{% endblock %}
+{% block top_actions %}
+  <a class="btn btn-ghost btn-sm ai-chip {{ 'is-live' if ai.configured else 'is-demo' }}" href="{{ url_for('settings_page') }}">
+    <span class="dot"></span>{{ 'Live AI' if ai.configured else 'Demo mode' }}
+  </a>
+{% endblock %}
+
+{% block content %}
+{% if demo_loaded %}
+  <div class="notice notice-info">
+    <div>
+      <strong>Demonstration data is loaded.</strong>
+      The profile and job description are fictional samples created for the demo. Reset them in
+      <a href="{{ url_for('settings_page') }}">Settings</a> whenever you want to start fresh.
+    </div>
+  </div>
+{% endif %}
+
+{% if not profile.full_name %}
+  <div class="notice notice-warn">
+    <div>
+      <strong>Your master profile is empty.</strong>
+      Fill it in once, then tailor as many resumes as you like — or explore with the fictional demo candidate.
+    </div>
+    <div class="notice-actions">
+      <button class="btn btn-primary btn-sm" data-action="load-demo">Load demo data</button>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('profile_page') }}">Open profile</a>
+    </div>
+  </div>
+{% endif %}
+
+<section class="hero-card">
+  <div class="hero-card-copy">
+    <span class="eyebrow">Welcome back</span>
+    <h2>{{ profile.full_name or 'Let’s build your first tailored resume' }}</h2>
+    <p>{{ tagline }}</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" data-action="create-resume">Create resume</button>
+      <a class="btn btn-ghost" href="{{ url_for('matcher_page') }}">Analyze job description</a>
+    </div>
+  </div>
+  <div class="hero-card-panel">
+    <span class="hero-panel-label">Profile readiness</span>
+    <div class="readiness-ring" style="--value: {{ stats.completeness }}">
+      <span>{{ stats.completeness }}<small>%</small></span>
+    </div>
+    <a class="hero-panel-link" href="{{ url_for('profile_page') }}">Complete your profile →</a>
+  </div>
+</section>
+
+<section class="stat-grid">
+  <article class="stat-card">
+    <span class="stat-label">Latest match score</span>
+    {% if latest_match %}
+      <div class="stat-value">{{ latest_match.score|score_int }}<span>/100</span></div>
+      <p class="stat-note">{{ latest_match.breakdown.label }} · {{ latest_match.job_title or 'Untitled role' }}</p>
+      <div class="progress"><span style="width: {{ latest_match.score }}%"></span></div>
+    {% else %}
+      <div class="stat-value muted">—</div>
+      <p class="stat-note">Analyse a job description to see your match.</p>
+      <a class="stat-link" href="{{ url_for('matcher_page') }}">Run the matcher →</a>
+    {% endif %}
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Resume drafts</span>
+    <div class="stat-value">{{ stats.resumes }}</div>
+    <p class="stat-note">Each draft keeps its own section order and template.</p>
+    <a class="stat-link" href="{{ url_for('builder_page') }}">Open the builder →</a>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Jobs analysed</span>
+    <div class="stat-value">{{ stats.jobs }}</div>
+    <p class="stat-note">Job descriptions and match results are stored in SQLite.</p>
+    <a class="stat-link" href="{{ url_for('matcher_page') }}">Analyse another →</a>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Exports generated</span>
+    <div class="stat-value">{{ stats.exports }}</div>
+    <p class="stat-note">PDF and DOCX downloads are tracked in export history.</p>
+    <a class="stat-link" href="{{ url_for('history_page') }}">View history →</a>
+  </article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="card">
+    <header class="card-head">
+      <div>
+        <h3>Recent resume drafts</h3>
+        <p>Continue where you left off. Saving is automatic.</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-action="create-resume">New draft</button>
+    </header>
+    {% if resumes %}
+      <ul class="draft-list">
+        {% for resume in resumes %}
+          <li>
+            <a class="draft-row" href="{{ url_for('builder_page', resume_id=resume.id) }}">
+              <span class="draft-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+              </span>
+              <span class="draft-main">
+                <strong>{{ resume.title }}</strong>
+                <small>
+                  {{ resume.template|capitalize }} template
+                  {% if resume.job_title %} · {{ resume.job_title }}{% endif %}
+                  · edited {{ resume.updated_at|nicedt }}
+                </small>
+              </span>
+              <span class="chip chip-ghost">Open</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <span class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        </span>
+        <h4>No resume drafts yet</h4>
+        <p>Create a draft from your master profile, then tailor it to a job description.</p>
+        <button class="btn btn-primary btn-sm" data-action="create-resume">Create my first resume</button>
+      </div>
+    {% endif %}
+  </article>
+
+  <article class="card">
+    <header class="card-head">
+      <div>
+        <h3>Latest match analysis</h3>
+        <p>Transparent, deterministic scoring — no random numbers.</p>
+      </div>
+      {% if latest_match %}<a class="chip chip-indigo" href="{{ url_for('matcher_page', job_id=latest_match.job_id) }}">Open</a>{% endif %}
+    </header>
+    {% if latest_match %}
+      <div class="match-summary">
+        <div class="donut donut-lg" style="--value: {{ latest_match.score }}">
+          <span>{{ latest_match.score|score_int }}<small>%</small></span>
+        </div>
+        <div>
+          <h4>{{ latest_match.job_title or 'Untitled role' }}</h4>
+          <p class="muted-sm">{{ latest_match.job_company or 'Company not specified' }} · {{ latest_match.breakdown.label }}</p>
+          <a class="stat-link" href="{{ url_for('matcher_page', job_id=latest_match.job_id) }}">See the full breakdown →</a>
+        </div>
+      </div>
+      <div class="chip-block">
+        <span class="chip-block-label">Matched</span>
+        <div class="chips-row">
+          {% for skill in latest_match.breakdown.matched_skills[:6] %}
+            <span class="chip chip-good">{{ skill }}</span>
+          {% else %}
+            <span class="muted-sm">No matched technical skills yet.</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="chip-block">
+        <span class="chip-block-label">Missing</span>
+        <div class="chips-row">
+          {% for skill in latest_match.breakdown.missing_skills[:6] %}
+            <span class="chip chip-bad">{{ skill }}</span>
+          {% else %}
+            <span class="muted-sm">Nothing missing from the required list.</span>
+          {% endfor %}
+        </div>
+      </div>
+      <p class="disclaimer">{{ latest_match.breakdown.disclaimer }}</p>
+    {% else %}
+      <div class="empty-state">
+        <span class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
+        </span>
+        <h4>No analysis yet</h4>
+        <p>Paste a job description to see matched, missing and partially matched skills.</p>
+        <a class="btn btn-primary btn-sm" href="{{ url_for('matcher_page') }}">Analyze a job description</a>
+      </div>
+    {% endif %}
+  </article>
+</section>
+
+<section class="quick-grid">
+  <a class="quick-card" href="{{ url_for('profile_page') }}">
+    <span class="quick-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.1 3.6-6 8-6s8 1.9 8 6"/></svg>
+    </span>
+    <div><strong>Master profile</strong><p>One source of truth for every resume.</p></div>
+    <span class="quick-arrow">→</span>
+  </a>
+  <a class="quick-card" href="{{ url_for('matcher_page') }}">
+    <span class="quick-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></svg>
+    </span>
+    <div><strong>Job matcher</strong><p>Paste a description, get an honest score.</p></div>
+    <span class="quick-arrow">→</span>
+  </a>
+  <a class="quick-card" href="{{ url_for('templates_page') }}">
+    <span class="quick-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
+    </span>
+    <div><strong>Resume templates</strong><p>Compare ATS Classic, Modern and Minimal.</p></div>
+    <span class="quick-arrow">→</span>
+  </a>
+  <a class="quick-card" href="{{ url_for('history_page') }}">
+    <span class="quick-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 21h16"/></svg>
+    </span>
+    <div><strong>Export history</strong><p>Re-download PDF and DOCX files.</p></div>
+    <span class="quick-arrow">→</span>
+  </a>
+</section>
+{% endblock %}

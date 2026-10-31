@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block eyebrow %}Configuration{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block page_sub %}AI status, default template and local data controls.{% endblock %}
+
+{% block content %}
+<div class="settings-grid">
+  <section class="card">
+    <div class="section-title-row">
+      <div>
+        <h3>Featherless AI</h3>
+        <p>The key stays in your local .env file and is never sent to the browser.</p>
+      </div>
+      <span class="chip {{ 'chip-good' if ai.configured else 'chip-warn' }}">{{ 'Configured' if ai.configured else 'Demo mode' }}</span>
+    </div>
+    <dl class="kv-list">
+      <div><dt>Status</dt><dd>
+        <span class="key-status {{ 'is-present' if ai.configured else 'is-missing' }}"><span class="dot"></span>{{ 'Live calls enabled' if ai.configured else 'No API key found' }}</span>
+      </dd></div>
+      <div><dt>Model</dt><dd>{{ ai.model }}</dd></div>
+      <div><dt>Base URL</dt><dd>{{ ai.base_url }}</dd></div>
+      <div><dt>Key variable</dt><dd><code>FEATHERLESS_API_KEY</code></dd></div>
+    </dl>
+    {% if not ai.configured %}
+      <p class="analysis-note">
+        Add <code>FEATHERLESS_API_KEY=your_key</code> to <code>.env</code> and restart
+        <code>python app.py</code> to enable live rewriting. Until then, matching, the editor and exports
+        all keep working with clearly labelled deterministic suggestions.
+      </p>
+    {% else %}
+      <p class="analysis-note">
+        Live tailoring only rephrases facts already on your profile. Any suggestion that adds a new
+        skill, number or claim is discarded by the fabrication guard before it reaches the editor.
+      </p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <div class="section-title-row">
+      <div>
+        <h3>Preferences</h3>
+        <p>Applies to new drafts and to AI tailoring.</p>
+      </div>
+    </div>
+    <form method="post" action="{{ url_for('save_settings_form') }}" class="field-grid">
+      <div class="field">
+        <label for="defaultTemplate">Default template</label>
+        <select class="select" id="defaultTemplate" name="default_template">
+          {% for template in templates %}
+            <option value="{{ template.id }}" {{ 'selected' if settings.default_template == template.id }}>{{ template.name }}</option>
+          {% endfor %}
+        </select>
+        <p class="field-hint">Used whenever a new draft is created without an explicit template.</p>
+      </div>
+      <div class="field">
+        <label for="aiMode">AI mode</label>
+        <select class="select" id="aiMode" name="ai_mode">
+          <option value="auto" {{ 'selected' if settings.ai_mode != 'fallback' }}>Auto — use live AI when configured</option>
+          <option value="fallback" {{ 'selected' if settings.ai_mode == 'fallback' }}>Always deterministic (no AI calls)</option>
+        </select>
+        <p class="field-hint">Use “Always deterministic” for a fully offline demo.</p>
+      </div>
+      <div class="span-2 form-actions">
+        <button class="btn btn-primary" type="submit">Save preferences</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card span-2">
+    <div class="section-title-row">
+      <div>
+        <h3>Scoring weights</h3>
+        <p>These are fixed and documented so the score can be audited. Categories that do not apply are removed and the rest renormalise to 100%.</p>
+      </div>
+      <span class="chip chip-ghost">Deterministic</span>
+    </div>
+    <table class="weight-table">
+      <thead><tr><th>Category</th><th>What it counts</th><th>Weight</th></tr></thead>
+      <tbody>
+        <tr><td>Required skill coverage</td><td>Extracted required skills found in your profile (half credit for partial matches)</td><td>{{ weights.required|int }}%</td></tr>
+        <tr><td>Preferred skill coverage</td><td>Preferred / bonus skills found in your profile</td><td>{{ weights.preferred|int }}%</td></tr>
+        <tr><td>Projects &amp; experience</td><td>Breadth of job skills evidenced in your projects and roles, plus years alignment</td><td>{{ weights.projects_experience|int }}%</td></tr>
+        <tr><td>Education &amp; other</td><td>Degree level vs. requirement and requested soft skills</td><td>{{ weights.education_other|int }}%</td></tr>
+      </tbody>
+    </table>
+    <p class="analysis-note">
+      Keyword similarity is reported separately on the matcher and is not part of the score.
+      Nothing here predicts hiring outcomes or guarantees ATS success.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="section-title-row">
+      <div>
+        <h3>Demonstration data</h3>
+        <p>A fictional final-year student and a sample internship posting.</p>
+      </div>
+    </div>
+    <p class="analysis-note">
+      Loading demo data replaces your master profile with the sample candidate and creates a new job
+      analysis plus a resume draft. Existing drafts are kept.
+    </p>
+    <div class="stack-actions" style="margin-top: 12px;">
+      <button class="btn btn-primary btn-sm" data-action="load-demo">Load demonstration data</button>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('matcher_page') }}">Open job matcher</a>
+    </div>
+  </section>
+
+  <section class="card danger-zone">
+    <div class="section-title-row">
+      <div>
+        <h3>Reset local data</h3>
+        <p>Deletes the profile, drafts, job analyses, match results and export history.</p>
+      </div>
+    </div>
+    <dl class="kv-list" style="margin-bottom: 12px;">
+      <div><dt>Resume drafts</dt><dd>{{ counts.resumes }}</dd></div>
+      <div><dt>Jobs analysed</dt><dd>{{ counts.jobs }}</dd></div>
+      <div><dt>Exports logged</dt><dd>{{ counts.exports }}</dd></div>
+    </dl>
+    <form method="post" action="{{ url_for('reset_form') }}" data-confirm="Delete all ResumeIQ data? This cannot be undone.">
+      <button class="btn btn-danger btn-sm" type="submit">Clear all data</button>
+    </form>
+  </section>
+
+  <section class="card span-2">
+    <div class="section-title-row">
+      <div>
+        <h3>Local setup reference</h3>
+        <p>Run these commands in Windows CMD from the project folder.</p>
+      </div>
+    </div>
+    <pre class="cmds">python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+python app.py</pre>
+    <p class="analysis-note">
+      SQLite file: <code>{{ config.DB_PATH }}</code>. API keys are read from <code>.env</code> only —
+      never stored in the database and never exposed to browser JavaScript.
+    </p>
+  </section>
+</div>
+{% endblock %}

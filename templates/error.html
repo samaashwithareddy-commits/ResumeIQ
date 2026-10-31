@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}Something needs attention{% endblock %}
+{% block content %}
+<section class="card error-page">
+  <div class="error-code">{{ code }}</div>
+  <h2>{{ title }}</h2>
+  <p>{{ message }}</p>
+  <div class="hero-actions" style="justify-content:center;">
+    <a class="btn btn-primary" href="{{ url_for('dashboard_page') }}">Back to dashboard</a>
+    <a class="btn btn-ghost" href="{{ url_for('matcher_page') }}">Open job matcher</a>
+  </div>
+</section>
+{% endblock %}

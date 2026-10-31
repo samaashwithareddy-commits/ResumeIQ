@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Master Profile{% endblock %}
+{% block eyebrow %}Your source of truth{% endblock %}
+{% block page_title %}Master profile{% endblock %}
+{% block page_sub %}Fill this in once. Every resume draft starts from these facts.{% endblock %}
+{% block top_actions %}
+  <span class="chip chip-ghost">{{ profile_completeness }}% complete</span>
+{% endblock %}
+
+{% block content %}
+<form id="profileForm" novalidate>
+  <div class="profile-layout">
+    <div class="form-stack">
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Personal details</h3>
+            <p>Only your name and one contact method are needed to get started.</p>
+          </div>
+          <span class="chip chip-ghost">Required: name</span>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="fullName">Full name <span class="req">*</span></label>
+            <input class="input" id="fullName" name="full_name" maxlength="120" autocomplete="name"
+                   value="{{ profile.full_name }}" placeholder="Aarav Sharma">
+          </div>
+          <div class="field">
+            <label for="headline">Headline <span class="opt">optional</span></label>
+            <input class="input" id="headline" name="headline" maxlength="160"
+                   value="{{ profile.headline }}" placeholder="Final-year CSE student · backend developer">
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="opt">optional</span></label>
+            <input class="input" id="email" name="email" type="email" maxlength="160" autocomplete="email"
+                   value="{{ profile.email }}" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="phone">Phone <span class="opt">optional</span></label>
+            <input class="input" id="phone" name="phone" maxlength="40" autocomplete="tel"
+                   value="{{ profile.phone }}" placeholder="+91 90000 12345">
+          </div>
+          <div class="field">
+            <label for="location">Location <span class="opt">optional</span></label>
+            <input class="input" id="location" name="location" maxlength="120"
+                   value="{{ profile.location }}" placeholder="Bengaluru, India">
+          </div>
+          <div class="field">
+            <label for="linkedin">LinkedIn URL <span class="opt">optional</span></label>
+            <input class="input" id="linkedin" name="linkedin" maxlength="300"
+                   value="{{ profile.linkedin }}" placeholder="https://www.linkedin.com/in/your-handle">
+          </div>
+          <div class="field span-2">
+            <label for="github">GitHub URL <span class="opt">optional</span></label>
+            <input class="input" id="github" name="github" maxlength="300"
+                   value="{{ profile.github }}" placeholder="https://github.com/your-handle">
+          </div>
+          <div class="field span-2">
+            <label for="summary">Professional summary <span class="opt">optional</span></label>
+            <textarea class="textarea" id="summary" name="summary" rows="4" maxlength="2500"
+                      placeholder="Two or three sentences about what you build and what you are looking for.">{{ profile.summary }}</textarea>
+            <p class="field-hint"><span id="summaryCount">0</span> / 2500 characters. Factual, first person, no buzzwords.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Technical &amp; soft skills</h3>
+            <p>Add real skills only — the matcher compares these against job requirements.</p>
+          </div>
+          <span class="chip chip-indigo" id="skillCount">0 skills</span>
+        </div>
+        <div class="chip-input" id="skillsInputWrap">
+          <div class="chips-row" id="skillsTags"></div>
+          <input class="chip-input-field" id="skillInput" type="text" maxlength="60"
+                 placeholder="Type a skill and press Enter (e.g. Python)" aria-label="Add a skill">
+        </div>
+        <p class="field-hint">Press Enter or comma to add. Suggestions: Python, SQL, React, Docker, REST APIs.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Education</h3>
+            <p>Most recent first. Multiple entries are supported.</p>
+          </div>
+        </div>
+        <div class="repeater-list" id="educationList"></div>
+        <button type="button" class="add-row" data-add="education" style="margin-top: 12px;">+ Add education</button>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Projects</h3>
+            <p>Describe what you built and the outcome. One bullet per line.</p>
+          </div>
+        </div>
+        <div class="repeater-list" id="projectList"></div>
+        <button type="button" class="add-row" data-add="projects" style="margin-top: 12px;">+ Add project</button>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Internships &amp; work experience</h3>
+            <p>One bullet per line; keep numbers you can defend in an interview.</p>
+          </div>
+        </div>
+        <div class="repeater-list" id="experienceList"></div>
+        <button type="button" class="add-row" data-add="experience" style="margin-top: 12px;">+ Add experience</button>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Certifications</h3>
+            <p>Add only certificates you actually earned.</p>
+          </div>
+        </div>
+        <div class="repeater-list" id="certificationList"></div>
+        <button type="button" class="add-row" data-add="certifications" style="margin-top: 12px;">+ Add certification</button>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h3>Achievements</h3>
+            <p>Awards, contest results, open-source contributions, measurable milestones.</p>
+          </div>
+        </div>
+        <div class="repeater-list" id="achievementList"></div>
+        <button type="button" class="add-row" data-add="achievements" style="margin-top: 12px;">+ Add achievement</button>
+      </section>
+    </div>
+
+    <aside class="profile-side">
+      <div class="card helper-card">
+        <h4>Profile health</h4>
+        <div class="completeness-bar">
+          <div class="progress"><span style="width: {{ profile_completeness }}%"></span></div>
+          <strong>{{ profile_completeness }}%</strong>
+        </div>
+        <ul class="helper-list">
+          <li>Recruiters scan for a role, a tech stack and an outcome. Keep bullets concrete.</li>
+          <li>Never list a skill you cannot discuss for two minutes.</li>
+          <li>Numbers are fine when they are true. ResumeIQ never invents them for you.</li>
+        </ul>
+      </div>
+      <div class="card helper-card">
+        <h4>Demo data</h4>
+        <p>Load a fictional final-year student named Aarav Sharma, plus a sample internship posting.</p>
+        <div class="stack-actions" style="margin-top: 12px;">
+          <button type="button" class="btn btn-ghost btn-sm" data-action="load-demo">Load demonstration data</button>
+        </div>
+      </div>
+      <div class="card helper-card">
+        <h4>Privacy</h4>
+        <p>Everything is stored in a local SQLite file on this computer. Your API key never reaches the browser.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="save-bar" style="margin-top: 16px;">
+    <span class="save-state" id="saveState"><span class="dot"></span> All changes saved</span>
+    <div class="save-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="resetProfile">Discard changes</button>
+      <button type="submit" class="btn btn-primary" id="saveProfile">Save profile</button>
+    </div>
+  </div>
+  <div class="form-error-box" id="formErrors" role="alert"></div>
+</form>
+
+<script type="application/json" id="profileData">{{ profile_json|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

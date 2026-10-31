@@ -1,0 +1,133 @@
+/* ==========================================================================
+   ResumeIQ — resume document themes (live preview + template gallery)
+   These rules only style the paper, so they can be scaled independently.
+   ========================================================================== */
+
+.resume-paper {
+  --r-accent: #4f46e5;
+  --r-heading: #0b1736;
+  --r-rule: #cbd5e1;
+  --r-text: #1f2937;
+  --r-muted: #55637a;
+  --r-font: "Segoe UI", Calibri, -apple-system, Arial, sans-serif;
+  --r-head-font: "Segoe UI", Calibri, Arial, sans-serif;
+  width: 794px;
+  min-height: 1123px;
+  padding: 56px 58px 62px;
+  background: #ffffff;
+  color: var(--r-text);
+  font-family: var(--r-font);
+  font-size: 11.4pt;
+  line-height: 1.42;
+  position: relative;
+  overflow-wrap: anywhere;
+}
+.resume-paper * { box-sizing: border-box; }
+
+.r-head { margin-bottom: 14px; }
+.r-name { margin: 0; font-family: var(--r-head-font); font-size: 23pt; line-height: 1.1; letter-spacing: -0.01em; color: var(--r-heading); }
+.r-headline { margin: 3px 0 0; font-size: 10.6pt; color: var(--r-muted); }
+.r-contact { margin: 7px 0 0; font-size: 9.4pt; color: var(--r-muted); display: flex; flex-wrap: wrap; column-gap: 9px; row-gap: 2px; }
+.r-contact span { display: inline-flex; align-items: center; gap: 9px; }
+.r-contact span + span::before { content: "•"; color: #a6b1c4; }
+
+.r-section { margin-top: 15px; break-inside: avoid; }
+.r-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--r-rule);
+}
+.r-section-title {
+  margin: 0;
+  font-family: var(--r-head-font);
+  font-size: 10.2pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--r-heading);
+}
+.r-section-meta { font-size: 8.4pt; color: var(--r-muted); }
+.r-summary { margin: 0; font-size: 10.4pt; line-height: 1.55; white-space: pre-line; }
+.r-skills { display: flex; flex-wrap: wrap; gap: 5px 6px; }
+.r-skill { font-size: 9.8pt; }
+.r-skill-sep { color: #b6c0d2; }
+.r-entry { margin-top: 8px; break-inside: avoid; }
+.r-entry:first-child { margin-top: 0; }
+.r-entry-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.r-entry-title { font-size: 10.7pt; font-weight: 700; color: var(--r-heading); margin: 0; }
+.r-entry-dates { font-size: 9.1pt; color: var(--r-muted); white-space: nowrap; }
+.r-entry-sub { font-size: 9.7pt; color: var(--r-muted); margin-top: 1px; }
+.r-entry-links { font-size: 8.9pt; color: var(--r-accent); word-break: break-all; }
+.r-bullets { margin: 4px 0 0; padding: 0 0 0 16px; list-style: disc; }
+.r-bullets li { margin: 2px 0 0; font-size: 10.3pt; line-height: 1.45; padding-left: 1px; }
+.r-bullets li::marker { color: var(--r-accent); }
+.r-text-block { font-size: 10.3pt; white-space: pre-line; }
+.r-certs { display: flex; flex-direction: column; gap: 3px; font-size: 10.2pt; }
+.r-empty-hint { font-size: 9.4pt; color: #98a3b6; font-style: italic; }
+
+/* --- ATS Classic --------------------------------------------------------- */
+.tpl-classic { --r-accent: #111827; --r-heading: #111827; --r-rule: #9ca3af; --r-font: Arial, "Segoe UI", sans-serif; --r-head-font: Arial, "Segoe UI", sans-serif; }
+.tpl-classic .r-name { font-size: 20pt; letter-spacing: 0; }
+.tpl-classic .r-section-title { letter-spacing: 0.08em; font-size: 10pt; }
+.tpl-classic .r-skills { display: block; font-size: 10.2pt; }
+.tpl-classic .r-skill-sep { margin: 0 3px; }
+
+/* --- Modern Professional ------------------------------------------------ */
+.tpl-modern { --r-accent: #4f46e5; --r-heading: #111c4e; --r-rule: #6366f1; --r-font: "Segoe UI", Calibri, Arial, sans-serif; --r-head-font: "Segoe UI Semibold", "Segoe UI", Calibri, Arial, sans-serif; }
+.tpl-modern .r-head { text-align: center; padding-bottom: 14px; border-bottom: 2px solid #e8e9ff; margin-bottom: 18px; }
+.tpl-modern .r-name { font-size: 26pt; letter-spacing: -0.02em; }
+.tpl-modern .r-headline { color: #4338ca; font-size: 11pt; letter-spacing: 0.01em; }
+.tpl-modern .r-contact { justify-content: center; }
+.tpl-modern .r-section-head { border-bottom: 1.5px solid var(--r-rule); align-items: center; }
+.tpl-modern .r-section-title { color: #312e81; letter-spacing: 0.14em; }
+.tpl-modern .r-section-meta { color: #6366f1; }
+.tpl-modern .r-bullets li::marker { color: #a5b4fc; }
+.tpl-modern .r-skill { background: #eef1ff; color: #312e81; border-radius: 999px; padding: 2px 8px; font-size: 9.2pt; }
+
+/* --- Minimal Technical -------------------------------------------------- */
+.tpl-minimal { --r-accent: #0f172a; --r-heading: #0f172a; --r-rule: #dbe2ec; --r-font: "Segoe UI", Calibri, Arial, sans-serif; --r-text: #27303f; font-size: 10.2pt; padding: 45px 48px 50px; }
+.tpl-minimal .r-name { font-size: 19pt; letter-spacing: -0.01em; }
+.tpl-minimal .r-headline { font-size: 9.6pt; }
+.tpl-minimal .r-contact { font-size: 8.7pt; margin-top: 5px; }
+.tpl-minimal .r-section { margin-top: 11px; }
+.tpl-minimal .r-section-head { margin-bottom: 4px; padding-bottom: 3px; }
+.tpl-minimal .r-section-title { font-size: 9.2pt; letter-spacing: 0.15em; color: #334155; }
+.tpl-minimal .r-summary { font-size: 9.4pt; line-height: 1.5; }
+.tpl-minimal .r-entry { margin-top: 5px; }
+.tpl-minimal .r-entry-title { font-size: 9.7pt; }
+.tpl-minimal .r-entry-dates, .tpl-minimal .r-entry-sub { font-size: 8.6pt; }
+.tpl-minimal .r-bullets { margin-top: 2px; padding-left: 14px; }
+.tpl-minimal .r-bullets li { font-size: 9.3pt; line-height: 1.4; margin-top: 1px; }
+.tpl-minimal .r-skill { font-size: 9pt; }
+.tpl-minimal .r-skill-sep { margin: 0 2px; }
+
+/* Mobile layout preview */
+.resume-paper.is-mobile {
+  width: 390px;
+  min-height: 720px;
+  padding: 26px 22px 30px;
+  font-size: 10.4px;
+}
+.resume-paper.is-mobile .r-name { font-size: 21px; }
+.resume-paper.is-mobile .r-headline { font-size: 10px; }
+.resume-paper.is-mobile .r-contact { font-size: 9px; gap: 2px 4px; }
+.resume-paper.is-mobile .r-contact span + span::before { display: none; }
+.resume-paper.is-mobile .r-contact span { background: #f1f4fa; border-radius: 6px; padding: 1px 6px; }
+.resume-paper.is-mobile .r-section { margin-top: 12px; }
+.resume-paper.is-mobile .r-entry-top { flex-direction: column; gap: 0; }
+.resume-paper.is-mobile .r-entry-dates { white-space: normal; }
+.resume-paper.is-mobile .r-summary, .resume-paper.is-mobile .r-bullets li { font-size: 10.2px; }
+.resume-paper.is-mobile .r-section-title { font-size: 9.4px; }
+.resume-paper.is-mobile .r-skill { font-size: 9.4px; }
+.resume-paper.is-mobile .r-entry-title { font-size: 10.6px; }
+
+/* Print safety for a browser print of the preview */
+@media print {
+  body * { visibility: hidden; }
+  .resume-paper, .resume-paper * { visibility: visible; }
+  .resume-paper { position: absolute; left: 0; top: 0; box-shadow: none; }
+}

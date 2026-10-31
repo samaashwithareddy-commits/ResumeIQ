@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Job Matcher{% endblock %}
+{% block eyebrow %}Transparent scoring{% endblock %}
+{% block page_title %}Job matcher{% endblock %}
+{% block page_sub %}Paste a description, extract the real requirements, and see exactly where you stand.{% endblock %}
+{% block top_actions %}
+  <span class="chip chip-ghost">Weights 50 / 20 / 20 / 10</span>
+{% endblock %}
+
+{% block content %}
+<div class="matcher-layout">
+  <form class="card matcher-form" id="analyzeForm" novalidate>
+    <div class="section-title-row">
+      <div>
+        <h3>Job description</h3>
+        <p>Nothing is invented — everything below comes from this text and your profile.</p>
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label for="jobTitle">Job title <span class="opt">optional</span></label>
+        <input class="input" id="jobTitle" maxlength="160" placeholder="Software Engineer Intern">
+      </div>
+      <div class="field">
+        <label for="jobCompany">Company <span class="opt">optional</span></label>
+        <input class="input" id="jobCompany" maxlength="160" placeholder="Northwind Labs">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="jobUrl">Job URL <span class="opt">optional</span></label>
+      <div class="url-row">
+        <input class="input" id="jobUrl" maxlength="500" placeholder="https://company.com/careers/role">
+        <button class="btn btn-ghost" type="button" id="fetchUrlBtn">Fetch text</button>
+      </div>
+      <p class="field-hint">
+        Only public HTML pages can be fetched (private addresses are blocked). If the site needs a login,
+        JavaScript rendering or blocks bots, the fetch will fail — paste the description instead.
+      </p>
+      <p class="field-hint" id="fetchNote"></p>
+    </div>
+
+    <div class="field">
+      <label for="jobDescription">Full job description <span class="req">*</span></label>
+      <textarea class="textarea jd-textarea" id="jobDescription" maxlength="20000"
+                placeholder="Paste the full posting here, including the requirements and preferred qualifications sections."></textarea>
+      <div class="jd-counter" id="jdCounter">
+        <span id="jdCount">0 characters</span>
+        <span>Minimum 40 characters</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" type="button" id="loadSampleBtn">Load sample job</button>
+      <button class="btn btn-primary" type="submit" id="analyzeBtn">Analyze job description</button>
+    </div>
+    <p class="disclaimer">
+      The score measures keyword and evidence overlap with what is on your profile. It is not a hiring
+      prediction and does not guarantee ATS success.
+    </p>
+  </form>
+
+  <div class="matcher-results" id="matchResults" aria-live="polite">
+    <div class="card result-empty">
+      <span class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
+      </span>
+      <h3>Your analysis will appear here</h3>
+      <p>Paste a posting and ResumeIQ will extract required and preferred skills, experience and education requirements, then score them against your real profile.</p>
+      <div class="hero-actions">
+        <button class="btn btn-ghost" type="button" id="emptyLoadSample">Load the sample job</button>
+        <a class="btn btn-primary" href="{{ url_for('profile_page') }}">Review my profile</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="matcherInitial">{{ initial_json|tojson }}</script>
+<script type="application/json" id="sampleJob">{{ sample_job|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/matcher.js') }}"></script>
+{% endblock %}
