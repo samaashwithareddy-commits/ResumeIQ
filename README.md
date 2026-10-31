@@ -342,3 +342,6 @@ Coverage highlights:
 - The anti-fabrication guard is demonstrable — feed it a metric and watch it reject.
 - Everything runs locally on Windows with free software; the demo never depends on a paid service.
 - The demo candidate is fictional and labelled as such, including contact details on `example.com`.
+## Project Overview
+
+ResumeIQ is an AI-powered resume analysis and job-matching application designed to help users evaluate resumes and identify relevant job opportunities.
